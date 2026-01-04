@@ -1,7 +1,13 @@
-"""Main entry point for the Pastel Calculator application."""
+"""Main entry point for the Teal Calculator application."""
 
+import sys
+from pathlib import Path
 import tkinter as tk
 from decimal import getcontext
+
+# Add project root to path for imports
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
 
 
 def main() -> None:
@@ -10,7 +16,7 @@ def main() -> None:
     getcontext().prec = 28
 
     root = tk.Tk()
-    from .gui import CalculatorGUI
+    from src.calculator.gui import CalculatorGUI
 
     app = CalculatorGUI(root)
     root.mainloop()

@@ -8,16 +8,16 @@ from .models import CalculatorState, Calculation, Operator
 from .validators import validate_division_by_zero
 
 
-# Pastel color palette
+# Teal color palette
 COLORS = {
-    "mint": "#B2F5E4",  # Number buttons
-    "pink": "#FFB6C1",  # Operator buttons
-    "peach": "#FFDAB9",  # Equals button
-    "blue": "#B0C4DE",  # Clear button
-    "lavender": "#E6E6FA",  # Background
+    "light_teal": "#A0E7E5",  # Number buttons - light teal
+    "teal": "#56C596",  # Operator buttons - medium teal
+    "dark_teal": "#3AA6B9",  # Equals button - darker teal
+    "coral": "#FF9B9B",  # Clear button - coral for contrast
+    "pale_teal": "#C4F1E8",  # Background - very pale teal
     "display_bg": "#FFFFFF",  # Display background
-    "text": "#333333",  # Default text color
-    "error": "#FF0000",  # Error text color
+    "text": "#2C3E50",  # Default text color - dark blue-gray
+    "error": "#E74C3C",  # Error text color - red
 }
 
 
@@ -30,10 +30,14 @@ class CalculatorGUI:
         self.state = CalculatorState()
 
         # Configure window
-        self.root.title("Pastel Calculator")
-        self.root.geometry("300x400")
-        self.root.configure(bg=COLORS["lavender"])
+        self.root.title("Calculator")
+        self.root.geometry("320x420")
+        self.root.configure(bg=COLORS["pale_teal"])
         self.root.resizable(False, False)
+
+        # Configure grid weights for proper spacing
+        for i in range(4):
+            self.root.grid_columnconfigure(i, weight=1)
 
         # Create GUI components
         self.display = self.create_display()
@@ -60,7 +64,7 @@ class CalculatorGUI:
         return display
 
     def create_number_buttons(self) -> None:
-        """Create number buttons (0-9) with pastel mint color."""
+        """Create number buttons (0-9) with light teal color."""
         # Number button layout
         numbers = [
             ("7", 2, 0),
@@ -80,17 +84,18 @@ class CalculatorGUI:
             btn = tk.Button(
                 self.root,
                 text=num,
-                font=("Arial", 18),
-                bg=COLORS["mint"],
+                font=("Arial", 20, "bold"),
+                bg=COLORS["light_teal"],
                 fg=COLORS["text"],
+                activebackground="#8DD8D6",
                 width=5,
                 height=2,
                 command=lambda n=num: self.on_number_click(n),
             )
-            btn.grid(row=row, column=col, padx=5, pady=5)
+            btn.grid(row=row, column=col, padx=(10, 10), pady=5, sticky="nsew")
 
     def create_operator_buttons(self) -> None:
-        """Create operator buttons (+, -, *, /) with pastel pink."""
+        """Create operator buttons (+, -, *, /) with medium teal."""
         operators: list[tuple[str, Operator, int]] = [
             ("+", "add", 2),
             ("-", "subtract", 3),
@@ -102,42 +107,45 @@ class CalculatorGUI:
             btn = tk.Button(
                 self.root,
                 text=symbol,
-                font=("Arial", 18),
-                bg=COLORS["pink"],
-                fg=COLORS["text"],
+                font=("Arial", 20, "bold"),
+                bg=COLORS["teal"],
+                fg="#1A1A1A",
+                activebackground=COLORS["dark_teal"],
                 width=5,
                 height=2,
                 command=lambda o=op: self.on_operator_click(o),
             )
-            btn.grid(row=row, column=3, padx=5, pady=5)
+            btn.grid(row=row, column=3, padx=(10, 10), pady=5, sticky="nsew")
 
     def create_equals_button(self) -> None:
-        """Create equals button (=) with pastel peach."""
+        """Create equals button (=) with dark teal."""
         btn = tk.Button(
             self.root,
             text="=",
-            font=("Arial", 18),
-            bg=COLORS["peach"],
-            fg=COLORS["text"],
+            font=("Arial", 20, "bold"),
+            bg=COLORS["dark_teal"],
+            fg="#1A1A1A",
+            activebackground=COLORS["teal"],
             width=5,
             height=2,
             command=self.on_equals_click,
         )
-        btn.grid(row=5, column=2, padx=5, pady=5)
+        btn.grid(row=5, column=2, padx=(10, 10), pady=5, sticky="nsew")
 
     def create_clear_button(self) -> None:
-        """Create clear button (C) with pastel blue."""
+        """Create clear button (C) with coral color for contrast."""
         btn = tk.Button(
             self.root,
             text="C",
-            font=("Arial", 18),
-            bg=COLORS["blue"],
-            fg=COLORS["text"],
+            font=("Arial", 20, "bold"),
+            bg=COLORS["coral"],
+            fg="#1A1A1A",
+            activebackground="#FF7A7A",
             width=5,
             height=2,
             command=self.on_clear_click,
         )
-        btn.grid(row=1, column=0, columnspan=4, padx=5, pady=5, sticky="ew")
+        btn.grid(row=1, column=0, columnspan=4, padx=10, pady=5, sticky="ew")
 
     def update_display(self) -> None:
         """Sync display with state.current_value."""
@@ -201,8 +209,18 @@ class CalculatorGUI:
 
             result = calculation.execute()
 
-            # Update state with result
-            self.state.current_value = str(result.normalize())
+            # Update state with result (avoid scientific notation)
+            # Convert to string, handling scientific notation
+            result_str = str(result)
+            if 'E' in result_str or 'e' in result_str:
+                # Use fixed-point notation for scientific notation
+                result_str = format(result, 'f')
+
+            # Remove unnecessary trailing zeros after decimal point
+            if '.' in result_str:
+                result_str = result_str.rstrip('0').rstrip('.')
+
+            self.state.current_value = result_str
             self.state.previous_value = ""
             self.state.operator = None
             self.state.clear_error()

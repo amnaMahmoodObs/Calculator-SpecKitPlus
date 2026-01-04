@@ -138,6 +138,29 @@ Calculator-Class9/
 3. ✅ **Negative numbers**: Full support for negative operands
 4. ✅ **Invalid input**: Input validation with error display
 
+## Troubleshooting
+
+### macOS ViewBridge Warning
+
+If you see this warning when running the calculator on macOS:
+
+```
+unable to obtain configuration from file:///Library/Preferences/com.apple.ViewBridge.plist
+due to Error Domain=NSCocoaErrorDomain Code=260 "The file "com.apple.ViewBridge.plist"
+couldn't be opened because there is no such file."
+```
+
+**This is harmless and can be safely ignored.** It's a macOS system warning related to GUI rendering preferences and doesn't affect the calculator's functionality. The calculator will work perfectly fine despite this message.
+
+### Quick Start
+
+Simply run:
+```bash
+python3 src/calculator/main.py
+```
+
+The calculator window will appear and work normally, regardless of the ViewBridge warning.
+
 ## Contributing
 
 See `.specify/memory/constitution.md` for coding principles and guidelines.
