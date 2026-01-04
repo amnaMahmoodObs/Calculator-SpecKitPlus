@@ -1,55 +1,189 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+Version change: [none] → 1.0.0
+Modified principles: Initial creation
+Added sections: All core principles, Development Standards, Testing & Quality, Governance
+Removed sections: None
+Templates requiring updates:
+  ✅ plan-template.md - aligned with constitution principles
+  ✅ spec-template.md - aligned with user scenarios approach
+  ✅ tasks-template.md - aligned with test-first requirements
+Follow-up TODOs: None - all placeholders filled
+-->
+
+# Python Calculator Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Type Safety
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+**Rule**: All Python code MUST use type hints for function parameters and return values.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+**Rationale**: Type hints improve code clarity, catch errors early during development, and enable better IDE support. For a calculator handling numeric operations, explicit type declarations prevent common mistakes with numeric types (int vs float) and help validate input/output contracts.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+**Requirements**:
+- Every function MUST declare parameter types and return type
+- Use `Union`, `Optional`, or `|` syntax for multiple type possibilities
+- Type hints MUST be validated using `mypy` or similar type checker
+- No `Any` type unless absolutely necessary and justified in comments
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### II. Error Handling First
 
-### [PRINCIPLE_6_NAME]
+**Rule**: All operations MUST handle error cases explicitly before implementing happy path logic.
 
+**Rationale**: A calculator's primary failure modes (division by zero, invalid input, numeric overflow) are well-known and predictable. Handling errors first ensures robustness and prevents silent failures or crashes.
 
-[PRINCIPLE__DESCRIPTION]
+**Requirements**:
+- Division by zero MUST be caught and handled with clear error messages
+- Invalid input (non-numeric, alphabets) MUST be validated before processing
+- Negative number handling MUST be explicit and tested
+- Decimal precision MUST be controlled and documented
+- Every function MUST document error conditions in docstring
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### III. Input Validation
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+**Rule**: All user input MUST be validated before any computation.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+**Rationale**: User input is the primary attack vector for bugs. Validating input ensures data integrity and prevents downstream errors.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+**Requirements**:
+- Type validation MUST happen at input boundaries
+- Range validation for numeric values where applicable
+- Format validation for decimal inputs
+- Clear error messages for validation failures
+- Input validation MUST be a separate, testable function
+
+### IV. Test-Driven Development (TDD)
+
+**Rule**: Tests MUST be written before implementation code.
+
+**Rationale**: TDD ensures requirements are clear, edge cases are identified early, and implementation stays focused. For a calculator, test cases directly map to requirements (operations, edge cases, error conditions).
+
+**Requirements**:
+- Write tests first, verify they fail
+- Implement code to make tests pass
+- Tests MUST cover: happy path, edge cases, error conditions
+- Test naming convention: `test_<operation>_<scenario>`
+- Minimum 80% code coverage for calculator logic
+
+### V. Single Responsibility Functions
+
+**Rule**: Each function MUST perform exactly one operation or validation.
+
+**Rationale**: Simple, focused functions are easier to test, debug, and reuse. Calculator operations naturally decompose into single-responsibility units.
+
+**Requirements**:
+- One function per arithmetic operation (add, subtract, multiply, divide)
+- Separate functions for input validation, parsing, formatting
+- Functions MUST be no longer than 20 lines
+- Complex operations MUST be decomposed into helper functions
+- Function names MUST be verbs describing the single action
+
+### VI. Decimal Precision Control
+
+**Rule**: All decimal operations MUST use Python's `decimal.Decimal` type for accuracy.
+
+**Rationale**: Floating-point arithmetic introduces rounding errors that are unacceptable in a calculator. The `Decimal` type provides arbitrary precision and avoids binary floating-point issues.
+
+**Requirements**:
+- Use `decimal.Decimal` for all numeric operations
+- Set explicit precision context at application start
+- Document precision choices in configuration
+- Never use `float` for calculations (only for display formatting if needed)
+- Test decimal edge cases: 0.1 + 0.2, division remainder, rounding
+
+## Development Standards
+
+### Code Quality
+
+- **Formatting**: Use `black` for code formatting (line length: 88 chars)
+- **Linting**: Use `ruff` for linting with strict rules enabled
+- **Type Checking**: Use `mypy` in strict mode
+- **Docstrings**: All public functions MUST have Google-style docstrings
+- **Comments**: Explain WHY, not WHAT; avoid obvious comments
+
+### Project Setup
+
+- **Package Manager**: `uv` for all dependency management
+- **Python Version**: Python 3.11+ required
+- **Virtual Environment**: Always use virtual environments (managed by uv)
+- **Dependencies**: Keep dependencies minimal; document all additions
+- **Lock File**: Commit `uv.lock` for reproducible builds
+
+### File Organization
+
+```
+src/
+├── calculator/
+│   ├── __init__.py
+│   ├── operations.py    # Arithmetic operations
+│   ├── validators.py    # Input validation
+│   └── cli.py          # Command-line interface
+
+tests/
+├── test_operations.py
+├── test_validators.py
+└── test_integration.py
+```
+
+## Testing & Quality
+
+### Testing Requirements
+
+- **Unit Tests**: Test each function in isolation
+- **Integration Tests**: Test complete user workflows
+- **Edge Case Coverage**:
+  - Division by zero
+  - Invalid input (alphabets, symbols)
+  - Negative numbers in all operations
+  - Decimal precision (0.1 + 0.2 = 0.3)
+  - Very large numbers
+  - Empty/null input
+
+### Test Execution
+
+- Tests MUST pass before any commit
+- Run `pytest` with coverage: `pytest --cov=src --cov-report=term-missing`
+- CI/CD pipeline MUST run: tests, type check, linting
+- No warnings allowed in test output
+
+### Quality Gates
+
+All commits MUST pass:
+1. All tests passing (`pytest`)
+2. Type checking passing (`mypy src/`)
+3. Linting passing (`ruff check src/`)
+4. Formatting check passing (`black --check src/`)
+5. Code coverage >= 80%
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+### Amendment Process
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+- Constitution changes require documented justification
+- Major changes (principle additions/removals) require version bump
+- All constitution updates MUST update dependent templates
+- Changes MUST be committed separately from feature work
+
+### Versioning
+
+Constitution follows semantic versioning (MAJOR.MINOR.PATCH):
+- **MAJOR**: Backward-incompatible principle changes
+- **MINOR**: New principles or expanded guidance
+- **PATCH**: Clarifications, typos, non-semantic fixes
+
+### Compliance
+
+- All code reviews MUST verify constitution compliance
+- Any principle violation MUST be justified in PR description
+- Use `Complexity Tracking` section in plan.md for justified violations
+- Constitution supersedes conflicting guidance in other documents
+
+### Documentation
+
+- All principles MUST be reflected in code review checklists
+- Use CLAUDE.md for runtime development guidance
+- Templates (spec, plan, tasks) MUST align with constitution
+- Keep constitution concise; detailed guidance goes in templates
+
+**Version**: 1.0.0 | **Ratified**: 2026-01-04 | **Last Amended**: 2026-01-04
