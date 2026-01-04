@@ -1,6 +1,6 @@
-# Pastel Calculator with Tkinter GUI
+# Calculator with Tkinter GUI
 
-A simple, elegant calculator application built with Python and tkinter, featuring a pastel color scheme and precise decimal arithmetic.
+A simple, elegant calculator application built with Python and tkinter, featuring a modern teal color scheme and precise decimal arithmetic.
 
 ## Features
 
@@ -10,7 +10,7 @@ A simple, elegant calculator application built with Python and tkinter, featurin
   - Division by zero detection with clear error messages
   - Invalid input validation
   - Support for negative numbers
-- **Pastel UI**: Beautiful color scheme with mint, pink, peach, and lavender colors
+- **Modern Teal UI**: Beautiful gradient color scheme with light to dark teal shades and coral accent
 - **Cross-Platform**: Runs on macOS, Windows, and Linux (tkinter is included with Python)
 
 ## Installation
@@ -123,13 +123,14 @@ Calculator-Class9/
 - **Type Safety**: Full type hints with mypy strict mode
 - **Decimal Precision**: Uses `decimal.Decimal` with 28 significant digits
 
-### Pastel Color Palette
+### Teal Color Palette
 
-- **Mint** (#B2F5E4): Number buttons
-- **Pink** (#FFB6C1): Operator buttons (+, -, ×, ÷)
-- **Peach** (#FFDAB9): Equals button (=)
-- **Blue** (#B0C4DE): Clear button (C)
-- **Lavender** (#E6E6FA): Window background
+- **Light Teal** (#A0E7E5): Number buttons (0-9, .)
+- **Medium Teal** (#56C596): Operator buttons (+, -, ×, ÷)
+- **Dark Teal** (#3AA6B9): Equals button (=)
+- **Coral** (#FF9B9B): Clear button (C) - distinctive accent color
+- **Pale Teal** (#C4F1E8): Window background
+- **Dark Text** (#1A1A1A): Button text for excellent contrast
 
 ## Challenges Solved
 
