@@ -38,6 +38,8 @@ class CalculatorGUI:
         # Configure grid weights for proper spacing
         for i in range(4):
             self.root.grid_columnconfigure(i, weight=1)
+        for i in range(6):
+            self.root.grid_rowconfigure(i, weight=1)
 
         # Create GUI components
         self.display = self.create_display()
@@ -60,8 +62,17 @@ class CalculatorGUI:
             bd=5,
             relief="ridge",
         )
-        display.grid(row=0, column=0, columnspan=4, padx=10, pady=10, sticky="ew")
+        display.grid(
+            row=0,
+            column=0,
+            columnspan=4,
+            padx=10,
+            pady=10,
+            ipady=15,   # increases height
+            sticky="ew"
+        )
         return display
+
 
     def create_number_buttons(self) -> None:
         """Create number buttons (0-9) with light teal color."""
